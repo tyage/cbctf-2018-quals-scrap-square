@@ -1,0 +1,12 @@
+extends layout.pug
+
+block content
+  form(action='/new', method='POST')
+    div
+      input(type='text', name='title')
+    div
+      textarea(name='body')
+    div
+      input(type='submit', value='Submit')
+
+block scripts

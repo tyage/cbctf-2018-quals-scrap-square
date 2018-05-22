@@ -1,0 +1,12 @@
+extends layout.pug
+
+block content
+  form(action='/new', method='POST')
+    div
+      input(type='text', name='username')
+    div
+      input(type='password', name='password')
+    div
+      input(type='submit', value='Login')
+
+block scripts

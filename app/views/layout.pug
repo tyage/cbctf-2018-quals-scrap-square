@@ -6,8 +6,13 @@ html(lang='en')
   body
     header
       nav
-        a(href='/new') New
-        a(href='/config') Config
+        if session.user
+          a(href='/') Top
+          a(href='/new') New Scrap
+          a(href='/config') Config
+        else
+          a(href='/login') Login
+          a(href='/register') Register
 
     div
       block content

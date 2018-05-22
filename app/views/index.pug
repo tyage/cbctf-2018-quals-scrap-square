@@ -1,6 +1,8 @@
 extends layout.pug
 
 block content
-  p #{scraps}
+  each scrap in scraps
+    div
+      a(href=`scraps/${scrap.id}`)!= scrap.title
 
 block scripts

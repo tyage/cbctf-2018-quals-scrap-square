@@ -14,6 +14,11 @@ html(lang='en')
           a(href='/login') Login
           a(href='/register') Register
 
+    if session.errors
+      div.errors
+        each error in session.errors
+          p!= error
+
     div
       block content
 

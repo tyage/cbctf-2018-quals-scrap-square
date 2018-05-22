@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/index.js",
   "dependencies": {
-    "express": "^4.16.3"
+    "express": "^4.16.3",
+    "pug": "^2.0.3"
   },
   "devDependencies": {},
   "scripts": {

@@ -1,7 +1,10 @@
 extends layout.pug
 
 block content
-  h1!= scrap.title
-  div!= scrap.body
+  div
+    p!= `${user.name}'s scraps'`
+  div
+    h1#scrap-title!= title
+    div#scrap-body
 
 block scripts

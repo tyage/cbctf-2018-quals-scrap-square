@@ -9,7 +9,7 @@ const db = new sqlite3.Database('scrap.db')
 db.serialize(() => {
   db.get('select count(*) from sqlite_master', (err, res) => {
     if (res['count(*)'] == 0) {
-      db.run('create table users (id integer primary key, name text, password text)')
+      db.run('create table users (id integer primary key, name text unique, password text)')
     }
   })
 })
@@ -47,16 +47,27 @@ app.use((req, res, next) => {
 
 app.get('/login', (req, res) => res.render('login'))
 app.post('/login', (req, res) => {
-  // TODO: implement
-  req.session.user = {
-    id: 1,
-    name: req.body.name,
-    password: req.body.password
-  }
-  res.redirect('/')
+  db.serialize(() => {
+    db.get(
+      'select id, name from users where name = ? AND password = ?',
+      req.body.name, req.body.password,
+      (err, user) => {
+        req.session.user = user
+        res.redirect('/')
+      }
+    )
+  })
 })
 app.get('/register', (req, res) => res.render('register'))
 app.post('/register', (req, res) => {
+  const errors = []
+  if (req.body.name.length > 60) {
+    errors.push('Username should be less than 60')
+  }
+  if (errors.length > 0) {
+    return res.render('register', { errors })
+  }
+
   db.run(
     'insert into users (name, password) values (?, ?)',
     req.body.name, req.body.password,
@@ -87,6 +98,11 @@ app.get('/', (req, res) => {
   })
 })
 
+app.get('/logout', (req, res) => {
+  req.session.user = null
+  res.redirect('/')
+})
+
 app.get('/new', (req, res) => res.render('new'))
 app.post('/new', (req, res) => {
   // check body
@@ -97,12 +113,11 @@ app.post('/new', (req, res) => {
   if (/[^0-9a-zA-Z '.]/.test(req.body.title)) {
     errors.push('You cannot use unsafe character')
   }
-  if (/[^0-9a-zA-Z '.\n]/.test(req.body.body)) {
+  if (/[^0-9a-zA-Z '.\n/]/.test(req.body.body)) {
     errors.push('You cannot use unsafe character')
   }
   if (errors.length > 0) {
-    req.session.errors = errors
-    return res.redirect('/new')
+    return res.render('/new', { errors })
   }
 
   const filename = path.join(rawStaticDir, req.session.user.id.toString(), req.body.title)
@@ -111,6 +126,7 @@ app.post('/new', (req, res) => {
 })
 
 app.get('/scraps/:user_id/:title', (req, res) => {
+  // admin and owner can view scrap
   db.serialize(() => {
     db.get('select * from users where id = ?', req.params.user_id, (err, user) => {
       res.render('scrap', { user, title: req.params.title })

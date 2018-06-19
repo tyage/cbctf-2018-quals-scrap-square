@@ -9,13 +9,14 @@ html(lang='en')
         if session.user
           a(href='/') Top
           a(href='/new') New Scrap
+          a(href='/logout') Logout
         else
           a(href='/login') Login
           a(href='/register') Register
 
-    if session.errors
+    if errors
       div.errors
-        each error in session.errors
+        each error in errors
           p!= error
 
     div

@@ -56,6 +56,7 @@ app.post('/login', (req, res) => {
 })
 app.get('/register', (req, res) => res.render('register'))
 app.post('/register', (req, res) => {
+  // TODO: implement
 })
 
 // require login below
@@ -79,10 +80,10 @@ app.post('/new', (req, res) => {
   // check body
   const errors = []
   if (req.body.title.length > 30) {
-    errors.push('Title should be less than 30')
+    errors.push('Title length should be less than 30')
   }
   if (/[^0-9a-zA-Z \n'.\-{}]+/.test(req.body.body)) {
-    errors.push('You cannot unsafe character in body')
+    errors.push('You cannot use unsafe characters in body')
   }
   if (errors.length > 0) {
     req.session.errors = errors

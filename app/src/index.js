@@ -27,7 +27,7 @@ app.use(session({
 
 // set CSP to prevent XSS
 app.use((req, res, next) => {
-  res.set('Content-Security-Policy', "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'")
+  res.set('Content-Security-Policy', "default-src 'none'; script-src 'self' https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js; style-src 'self' https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css; img-src 'self'")
   next()
 })
 

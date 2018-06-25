@@ -1,12 +1,12 @@
 extends layout.pug
 
 block content
-  form(action='/login', method='POST')
-    div
-      input(type='text', name='name')
-    div
-      input(type='password', name='password')
-    div
-      input(type='submit', value='Login')
+  form.form-signin(action='/login', method='POST')
+    div.mb-3
+      input.form-control(type='text', name='name', placeholder='Name')
+    div.mb-3
+      input.form-control(type='password', name='password', placeholder='Password')
+    div.mb-3
+      button.btn.btn-lg.btn-primary.btn-block(type='submit') Login
 
 block scripts

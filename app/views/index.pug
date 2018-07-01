@@ -1,8 +1,9 @@
 extends layout.pug
 
 block content
-  each file in files
-    div
-      a(href=`scraps/${session.user.id}/${file}`)!= file
+  div.row
+    each file in files
+      div.col-md-4
+        a.scrap-title(href=`scraps/${session.user.id}/${file}`)!= file
 
 block scripts

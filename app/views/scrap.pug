@@ -5,6 +5,20 @@ block content
     p!= `${user.name}'s scraps'`
   div
     h1#scrap-title!= title
-    div#scrap-body
+    nav
+      ul
+        li
+          a(href=`/static/raw/${user.id}/${title}`) Raw
+        li
+          a(href='#', class='edit-scrap') Edit
+    div.scrap-body
+    form.form-signin.scrap-editor(action='/edit', method='POST')
+      input(type='hidden', name='title', value=title)
+      div.mb-3
+        textarea.form-control(type='text', name='body', placeholder='Body', rows=10)
+      div.mb-3
+        button.btn.btn-lg.btn-primary.btn-block(type='submit') Edit
 
 block scripts
+  script(src='/static/load-scrap.js')
+  script(src='/static/edit-scrap.js')

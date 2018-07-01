@@ -27,7 +27,13 @@ app.use(session({
 
 // set CSP to prevent XSS
 app.use((req, res, next) => {
-  res.set('Content-Security-Policy', "default-src 'none'; script-src 'self' https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js; style-src 'self' https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css; img-src 'self'")
+  res.set('Content-Security-Policy', `
+    default-src 'none';
+    script-src 'self' https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js https://code.jquery.com/jquery-3.3.1.min.js;
+    style-src 'self' https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css;
+    img-src 'self';
+    connect-src 'self'
+  `.replace(/\n/g, ''))
   next()
 })
 
@@ -117,7 +123,27 @@ app.post('/new', (req, res) => {
     errors.push('You cannot use unsafe character')
   }
   if (errors.length > 0) {
-    return res.render('/new', { errors })
+    return res.render('new', { errors })
+  }
+
+  const filename = path.join(rawStaticDir, req.session.user.id.toString(), req.body.title)
+  fs.writeFileSync(filename, req.body.body)
+  res.redirect(`/scraps/${req.session.user.id}/${req.body.title}`)
+})
+app.post('/edit', (req, res) => {
+  // check body
+  const errors = []
+  if (req.body.title.length > 30) {
+    errors.push('Title length should be less than 30')
+  }
+  if (/[^0-9a-zA-Z '.]/.test(req.body.title)) {
+    errors.push('You cannot use unsafe character')
+  }
+  if (/[^0-9a-zA-Z '.\n/]/.test(req.body.body)) {
+    errors.push('You cannot use unsafe character')
+  }
+  if (errors.length > 0) {
+    return res.render(`/scraps/${req.session.user.id}/${req.body.title}`, { errors })
   }
 
   const filename = path.join(rawStaticDir, req.session.user.id.toString(), req.body.title)

@@ -13,3 +13,7 @@
   text-decoration: none;
   background: #343a40ab;
 }
+
+.scrap-editor {
+  display: none;
+}

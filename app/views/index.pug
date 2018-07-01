@@ -4,6 +4,6 @@ block content
   div.row
     each file in files
       div.col-md-4
-        a.scrap-title(href=`scraps/${session.user.id}/${file}`)!= file
+        a.scraps-item(href=`scraps/${session.user.id}/${file}`)!= file
 
 block scripts

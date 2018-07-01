@@ -1,4 +1,4 @@
-.scrap-title {
+.scraps-item {
   background: #343a40;
   height: 225px;
   width: 100%;
@@ -8,7 +8,7 @@
   align-items: center;
   font-size: 50px;
 }
-.scrap-title:hover {
+.scraps-item:hover {
   color: white;
   text-decoration: none;
   background: #343a40ab;

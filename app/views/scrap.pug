@@ -4,13 +4,15 @@ block content
   div
     p!= `${user.name}'s scraps'`
   div
-    h1#scrap-title!= title
+    h1.scrap-title!= title
     nav
       ul
         li
           a(href=`/static/raw/${user.id}/${title}`) Raw
         li
           a(href='#', class='edit-scrap') Edit
+        li
+          a(href='#', class='report-scrap') Report this scrap
     div.scrap-body
     form.form-signin.scrap-editor(action='/edit', method='POST')
       input(type='hidden', name='title', value=title)
@@ -20,5 +22,7 @@ block content
         button.btn.btn-lg.btn-primary.btn-block(type='submit') Edit
 
 block scripts
+  script(src='/static/config.js')
   script(src='/static/load-scrap.js')
   script(src='/static/edit-scrap.js')
+  script(src='/static/report-scrap.js')

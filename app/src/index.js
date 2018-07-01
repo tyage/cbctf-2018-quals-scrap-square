@@ -68,8 +68,8 @@ app.post('/login', (req, res) => {
 app.get('/register', (req, res) => res.render('register'))
 app.post('/register', (req, res) => {
   const errors = []
-  if (req.body.name.length > 60) {
-    errors.push('Username should be less than 60')
+  if (req.body.name.length > 80) {
+    errors.push('Username should be less than 80')
   }
   if (errors.length > 0) {
     return res.render('register', { errors })
@@ -125,7 +125,7 @@ app.post('/new', (req, res) => {
   if (/[^0-9a-zA-Z '.]/.test(req.body.title)) {
     errors.push('You cannot use unsafe character')
   }
-  if (/[^0-9a-zA-Z '.\n/]/.test(req.body.body)) {
+  if (/[^0-9a-zA-Z '.\n\r/\-]/.test(req.body.body)) {
     errors.push('You cannot use unsafe character')
   }
   if (errors.length > 0) {
@@ -145,11 +145,11 @@ app.post('/edit', (req, res) => {
   if (/[^0-9a-zA-Z '.]/.test(req.body.title)) {
     errors.push('You cannot use unsafe character')
   }
-  if (/[^0-9a-zA-Z '.\n/]/.test(req.body.body)) {
+  if (/[^0-9a-zA-Z '.\n\r/\-]/.test(req.body.body)) {
     errors.push('You cannot use unsafe character')
   }
   if (errors.length > 0) {
-    return res.render(`/scraps/${req.session.user.id}/${req.body.title}`, { errors })
+    return res.redirect(`/scraps/${req.session.user.id}/${req.body.title}`)
   }
 
   const filename = path.join(rawStaticDir, req.session.user.id.toString(), req.body.title)

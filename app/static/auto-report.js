@@ -1,3 +1,3 @@
-if (location.search.includes('report')) {
-  $('.report-scrap').click()
+if ($('.scrap-body').text().includes(window.banword)) {
+  reportScrap()
 }

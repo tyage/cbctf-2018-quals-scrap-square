@@ -1,9 +1,8 @@
 extends layout.pug
 
 block content
-  div
+  div.scrap-wrapper
     p!= `${user.name}'s scraps'`
-  div
     h1.scrap-title!= title
     nav
       ul
@@ -13,7 +12,6 @@ block content
           a(href='#', class='edit-scrap') Edit
         li
           a(href='#', class='report-scrap') Report this scrap
-    div.scrap-body
     form.form-signin.scrap-editor(action='/edit', method='POST')
       input(type='hidden', name='title', value=title)
       div.mb-3
@@ -26,3 +24,5 @@ block scripts
   script(src='/static/load-scrap.js')
   script(src='/static/edit-scrap.js')
   script(src='/static/report-scrap.js')
+  <!-- auto report feature is disabled now -->
+  <!-- script(src='/static/auto-report.js') -->

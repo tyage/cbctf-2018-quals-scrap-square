@@ -1,3 +1,4 @@
-window.config = {
-  admin: 1
+window.admin = {
+  id: 1
 }
+window.banword = 'give me flag'

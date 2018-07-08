@@ -158,6 +158,9 @@ app.post('/edit', (req, res) => {
 })
 
 app.post('/report', (req, res) => {
+  if (!isAdmin) {
+    // check captcha
+  }
   db.run(
     'insert into reports (user_id, url, title, body) values (?, ?, ?, ?)',
     req.body.to, req.body.url, req.body.title, req.body.body,

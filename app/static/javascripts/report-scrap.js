@@ -1,4 +1,4 @@
-reportScrap = (captcha) => {
+window.reportScrap = (captcha) => {
   $.post('/report', {
     to: window.admin.id,
     url: location.href,

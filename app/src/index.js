@@ -4,6 +4,10 @@ const path = require('path')
 const bodyParser = require('body-parser')
 const sqlite3 = require('sqlite3')
 const fs = require('fs')
+const Recaptcha = require('express-recaptcha').Recaptcha;
+const config = require('../config.js')
+
+const recaptcha = new Recaptcha(config.recaptcha.siteKey, config.recaptcha.secretKey);
 
 const db = new sqlite3.Database('scrap.db')
 db.serialize(() => {
@@ -17,11 +21,10 @@ db.serialize(() => {
 
 const app = express()
 
-app.use(bodyParser.urlencoded({
-  extended: false
-}))
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({
-  secret: 'XXXSECRETVALUE',
+  secret: config.express.secret,
   resave: false,
   saveUninitialized: false
 }))
@@ -30,9 +33,10 @@ app.use(session({
 app.use((req, res, next) => {
   res.set('Content-Security-Policy', `
     default-src 'none';
-    script-src 'self' https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js https://code.jquery.com/jquery-3.3.1.min.js;
+    script-src 'self' https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js https://code.jquery.com/jquery-3.3.1.min.js http://www.google.com/recaptcha/api.js https://www.gstatic.com/recaptcha/;
     style-src 'self' https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css;
     img-src 'self';
+    frame-src https://www.google.com/recaptcha/;
     connect-src 'self'
   `.replace(/\n/g, ''))
   next()
@@ -119,55 +123,72 @@ app.get('/new', (req, res) => res.render('new'))
 app.post('/new', (req, res) => {
   // check body
   const errors = []
-  if (req.body.title.length > 30) {
+  const title = req.body.title.toString();
+  const body = req.body.body.toString();
+  if (title.length > 30) {
     errors.push('Title length should be less than 30')
   }
-  if (/[^0-9a-zA-Z '.]/.test(req.body.title)) {
+  if (/[^0-9a-zA-Z '.]/.test(title)) {
     errors.push('You cannot use unsafe character')
   }
-  if (/[^0-9a-zA-Z '.\n\r/\-]/.test(req.body.body)) {
+  if (/[^0-9a-zA-Z '.\n\r/\-]/.test(body)) {
     errors.push('You cannot use unsafe character')
   }
   if (errors.length > 0) {
     return res.render('new', { errors })
   }
 
-  const filename = path.join(rawStaticDir, req.session.user.id.toString(), req.body.title)
-  fs.writeFileSync(filename, req.body.body)
-  res.redirect(`/scraps/${req.session.user.id}/${req.body.title}`)
+  const filename = path.join(rawStaticDir, req.session.user.id.toString(), title)
+  fs.writeFileSync(filename, body)
+  res.redirect(`/scraps/${req.session.user.id}/${title}`)
 })
 app.post('/edit', (req, res) => {
   // check body
   const errors = []
-  if (req.body.title.length > 30) {
+  const title = req.body.title.toString();
+  const body = req.body.body.toString();
+  if (title.length > 30) {
     errors.push('Title length should be less than 30')
   }
-  if (/[^0-9a-zA-Z '.]/.test(req.body.title)) {
+  if (/[^0-9a-zA-Z '.]/.test(title)) {
     errors.push('You cannot use unsafe character')
   }
-  if (/[^0-9a-zA-Z '.\n\r/\-]/.test(req.body.body)) {
+  if (/[^0-9a-zA-Z '.\n\r/\-]/.test(body)) {
     errors.push('You cannot use unsafe character')
   }
   if (errors.length > 0) {
-    return res.redirect(`/scraps/${req.session.user.id}/${req.body.title}`)
+    return res.redirect(`/scraps/${req.session.user.id}/${title}`)
   }
 
-  const filename = path.join(rawStaticDir, req.session.user.id.toString(), req.body.title)
-  fs.writeFileSync(filename, req.body.body)
-  res.redirect(`/scraps/${req.session.user.id}/${req.body.title}`)
+  const filename = path.join(rawStaticDir, req.session.user.id.toString(), title)
+  fs.writeFileSync(filename, body)
+  res.redirect(`/scraps/${req.session.user.id}/${title}`)
 })
 
 app.post('/report', (req, res) => {
-  if (!isAdmin) {
-    // check captcha
+  const doReport = () => {
+    db.run(
+      'insert into reports (user_id, url, title, body) values (?, ?, ?, ?)',
+      req.body.to, req.body.url, req.body.title, req.body.body,
+      function (err, user) {
+        res.json({ success: true })
+      }
+    )
   }
-  db.run(
-    'insert into reports (user_id, url, title, body) values (?, ?, ?, ?)',
-    req.body.to, req.body.url, req.body.title, req.body.body,
-    function (err, user) {
-      res.json({ success: true })
-    }
-  )
+
+  // only admin can bypass recaptcha
+  if (req.session.user.id === 1) {
+    doReport()
+  } else {
+    // check captcha
+    recaptcha.verify(req, (error, data) => {
+      if (error) {
+        res.json({ success: false })
+      } else {
+        doReport()
+      }
+    })
+  }
 })
 app.get('/reports', (req, res) => {
   db.serialize(() => {
@@ -185,7 +206,11 @@ app.get('/scraps/:user_id/:title', (req, res) => {
   // admin and owner can view scrap
   db.serialize(() => {
     db.get('select * from users where id = ?', req.params.user_id, (err, user) => {
-      res.render('scrap', { user, title: req.params.title })
+      res.render('scrap', {
+        user,
+        title: req.params.title,
+        captcha: recaptcha.render()
+      })
     })
   })
 })

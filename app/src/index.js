@@ -17,9 +17,8 @@ db.serialize(() => {
 
 const app = express()
 
-app.use(bodyParser.urlencoded({
-  extended: false
-}))
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
   secret: 'XXXSECRETVALUE',
   resave: false,
@@ -119,42 +118,46 @@ app.get('/new', (req, res) => res.render('new'))
 app.post('/new', (req, res) => {
   // check body
   const errors = []
-  if (req.body.title.length > 30) {
+  const title = req.body.title.toString();
+  const body = req.body.body.toString();
+  if (title.length > 30) {
     errors.push('Title length should be less than 30')
   }
-  if (/[^0-9a-zA-Z '.]/.test(req.body.title)) {
+  if (/[^0-9a-zA-Z '.]/.test(title)) {
     errors.push('You cannot use unsafe character')
   }
-  if (/[^0-9a-zA-Z '.\n\r/\-]/.test(req.body.body)) {
+  if (/[^0-9a-zA-Z '.\n\r/\-]/.test(body)) {
     errors.push('You cannot use unsafe character')
   }
   if (errors.length > 0) {
     return res.render('new', { errors })
   }
 
-  const filename = path.join(rawStaticDir, req.session.user.id.toString(), req.body.title)
-  fs.writeFileSync(filename, req.body.body)
-  res.redirect(`/scraps/${req.session.user.id}/${req.body.title}`)
+  const filename = path.join(rawStaticDir, req.session.user.id.toString(), title)
+  fs.writeFileSync(filename, body)
+  res.redirect(`/scraps/${req.session.user.id}/${title}`)
 })
 app.post('/edit', (req, res) => {
   // check body
   const errors = []
-  if (req.body.title.length > 30) {
+  const title = req.body.title.toString();
+  const body = req.body.body.toString();
+  if (title.length > 30) {
     errors.push('Title length should be less than 30')
   }
-  if (/[^0-9a-zA-Z '.]/.test(req.body.title)) {
+  if (/[^0-9a-zA-Z '.]/.test(title)) {
     errors.push('You cannot use unsafe character')
   }
-  if (/[^0-9a-zA-Z '.\n\r/\-]/.test(req.body.body)) {
+  if (/[^0-9a-zA-Z '.\n\r/\-]/.test(body)) {
     errors.push('You cannot use unsafe character')
   }
   if (errors.length > 0) {
-    return res.redirect(`/scraps/${req.session.user.id}/${req.body.title}`)
+    return res.redirect(`/scraps/${req.session.user.id}/${title}`)
   }
 
-  const filename = path.join(rawStaticDir, req.session.user.id.toString(), req.body.title)
-  fs.writeFileSync(filename, req.body.body)
-  res.redirect(`/scraps/${req.session.user.id}/${req.body.title}`)
+  const filename = path.join(rawStaticDir, req.session.user.id.toString(), title)
+  fs.writeFileSync(filename, body)
+  res.redirect(`/scraps/${req.session.user.id}/${title}`)
 })
 
 app.post('/report', (req, res) => {

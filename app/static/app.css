@@ -17,3 +17,7 @@
 .scrap-editor {
   display: none;
 }
+
+.g-recaptcha-response {
+  display: none;
+}

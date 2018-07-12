@@ -11,13 +11,20 @@ block content
         li
           a(href='#', class='edit-scrap') Edit
         li
-          a(href='#', class='report-scrap') Report this scrap
+          a(href='#', class='report-scrap', data-toggle='modal', data-target='#report-modal') Report this scrap
     form.form-signin.scrap-editor(action='/edit', method='POST')
       input(type='hidden', name='title', value=title)
       div.mb-3
         textarea.form-control(type='text', name='body', placeholder='Body', rows=10)
       div.mb-3
         button.btn.btn-lg.btn-primary.btn-block(type='submit') Edit
+
+  div.modal.fade#report-modal(role='dialog', aria-hidden='true')
+    div.modal-dialog(role='document')
+      div.modal-content
+        div.modal-body!= captcha
+        div.modal-footer
+          button.btn.btn-primary.report-scrap-button(type='submit') Report
 
 block scripts
   script(src='/static/javascripts/load-scrap.js')

@@ -2,6 +2,7 @@ window.reportScrap = (captcha) => {
   return $.post('/report', {
     to: window.admin.id,
     url: location.href,
+    'g-recaptcha-response': captcha,
     title: $('.scrap-title').text(),
     body: $('.scrap-body').text()
   })

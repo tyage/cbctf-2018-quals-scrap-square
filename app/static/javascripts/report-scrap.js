@@ -10,6 +10,6 @@ window.reportScrap = (captcha) => {
 $('.report-scrap-button').click(() => {
   const captcha = $('#g-recaptcha-response').val()
   reportScrap(captcha).then(() => {
-    alert('reported!')
+    alert('reported! admin will view your report.')
   })
 })

@@ -191,6 +191,7 @@ app.post('/report', (req, res) => {
   }
 })
 app.get('/reports', (req, res) => {
+  // TODO: should verify report url
   db.serialize(() => {
     db.all(
       'select url, title, body from reports where user_id = ?',

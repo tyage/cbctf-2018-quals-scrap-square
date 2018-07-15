@@ -1,33 +1,41 @@
 const { spawn } = require('child_process')
+const puppeteer = require('puppeteer')
 const sqlite3 = require('sqlite3')
 
 const adminId = 1
 const db = new sqlite3.Database('../app/scrap.db')
-const chromePath = '/opt/google/chrome/google-chrome'
+
+const sleep = (millsec) => new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve()
+  }, millsec)
+})
+
+const visitUrl = async (report) => {
+  console.log(`checking report ${report.id}`)
+  console.log(report)
+  const browser = await puppeteer.launch({
+    args: [
+      '--media-cache-size=1',
+      '--disk-cache-size=1',
+      '--headless',
+      '--disable-gpu',
+      '--remote-debugging-port=0'
+    ]
+  })
+  const page = await browser.newPage()
+  await page.goto(report.url)
+  await sleep(3000)
+  console.log(`checking report ${report.id} is done`)
+  await browser.close()
+}
 
 const checkReport = async (report) => {
   return new Promise((resolve, reject) => {
-    const launchChrome = () => {
-      console.log(`checking report ${report.id}`)
-      console.log(report)
-      const chrome = spawn(chromePath, [
-        report.url,
-        '--media-cache-size=1',
-        '--disk-cache-size=1',
-        '--headless',
-        '--disable-gpu',
-        '--remote-debugging-port=0'
-      ])
-      setTimeout(() => {
-        console.log(`checking report ${report.id} is done`)
-        chrome.kill()
-        resolve()
-      }, 3000)
-    }
-
     // delete report when check started
-    db.run('delete from reports where id = ?', report.id, () => {
-      launchChrome()
+    db.run('delete from reports where id = ?', report.id, async () => {
+      await visitUrl(report)
+      resolve()
     })
   })
 }

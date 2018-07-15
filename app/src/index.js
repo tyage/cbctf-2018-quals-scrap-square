@@ -5,7 +5,7 @@ const bodyParser = require('body-parser')
 const sqlite3 = require('sqlite3')
 const fs = require('fs')
 const Recaptcha = require('express-recaptcha').Recaptcha;
-const config = require('../config.js')
+const config = require('../../config.js')
 
 const recaptcha = new Recaptcha(config.recaptcha.siteKey, config.recaptcha.secretKey);
 
@@ -120,21 +120,38 @@ app.get('/logout', (req, res) => {
   res.redirect('/')
 })
 
-app.get('/new', (req, res) => res.render('new'))
-app.post('/new', (req, res) => {
-  // check body
+const isTitleValid = (title) => {
   const errors = []
-  const title = req.body.title.toString();
-  const body = req.body.body.toString();
   if (title.length > 30) {
     errors.push('Title length should be less than 30')
   }
   if (/[^0-9a-zA-Z '.]/.test(title)) {
     errors.push('You cannot use unsafe character')
   }
+  return {
+    success: errors.length === 0,
+    errors
+  }
+}
+const isBodyValid = (body) => {
+  const errors = []
   if (/[^0-9a-zA-Z '.\n\r/\-]/.test(body)) {
     errors.push('You cannot use unsafe character')
   }
+  return {
+    success: errors.length === 0,
+    errors
+  }
+}
+
+app.get('/new', (req, res) => res.render('new'))
+app.post('/new', (req, res) => {
+  // check body
+  const title = req.body.title.toString()
+  const body = req.body.body.toString()
+  const { errors: titleErrors } = isTitleValid(title)
+  const { errors: bodyErrors } = isBodyValid(body)
+  const errors = [ ...titleErrors, ...bodyErrors ]
   if (errors.length > 0) {
     return res.render('new', { errors })
   }
@@ -145,18 +162,11 @@ app.post('/new', (req, res) => {
 })
 app.post('/edit', (req, res) => {
   // check body
-  const errors = []
-  const title = req.body.title.toString();
-  const body = req.body.body.toString();
-  if (title.length > 30) {
-    errors.push('Title length should be less than 30')
-  }
-  if (/[^0-9a-zA-Z '.]/.test(title)) {
-    errors.push('You cannot use unsafe character')
-  }
-  if (/[^0-9a-zA-Z '.\n\r/\-]/.test(body)) {
-    errors.push('You cannot use unsafe character')
-  }
+  const title = req.body.title.toString()
+  const body = req.body.body.toString()
+  const { errors: titleErrors } = isTitleValid(title)
+  const { errors: bodyErrors } = isBodyValid(body)
+  const errors = [ ...titleErrors, ...bodyErrors ]
   if (errors.length > 0) {
     return res.redirect(`/scraps/${req.session.user.id}/${title}`)
   }

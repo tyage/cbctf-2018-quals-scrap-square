@@ -4,7 +4,7 @@ let timer = setInterval(() => {
   }
 
   clearInterval(timer)
-  if ($('.scrap-body').text().includes(window.banword)) {
+  if ($('.scrap-body').text().includes(window.banword || '')) {
     reportScrap()
   }
 }, 300)

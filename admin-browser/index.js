@@ -3,7 +3,7 @@ const sqlite3 = require('sqlite3')
 
 const adminId = 1
 const db = new sqlite3.Database('../app/scrap.db')
-const chromePath = ''
+const chromePath = '/opt/google/chrome/google-chrome'
 
 const checkReport = async (report) => {
   return new Promise((resolve, reject) => {
@@ -26,7 +26,7 @@ const checkReport = async (report) => {
     }
 
     // delete report when check started
-    db.run('delete from reports where id = ?', reports.id, () => {
+    db.run('delete from reports where id = ?', report.id, () => {
       launchChrome()
     })
   })
@@ -37,7 +37,7 @@ const checkAllReports = async () => {
     db.all(
       'select id, url, title, body from reports where user_id = ?',
       adminId,
-      (err, reports) => {
+      async (err, reports) => {
         for (let report of reports) {
           await checkReport(report)
         }
@@ -45,3 +45,4 @@ const checkAllReports = async () => {
     )
   })
 }
+checkAllReports()

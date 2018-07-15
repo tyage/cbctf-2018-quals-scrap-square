@@ -1,7 +1,7 @@
 const { spawn } = require('child_process')
 const puppeteer = require('puppeteer')
 const sqlite3 = require('sqlite3')
-const config = require('../config')
+const config = require('../config.js')
 
 const adminId = 1
 const db = new sqlite3.Database('../app/scrap.db')

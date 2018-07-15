@@ -32,7 +32,8 @@ const visitUrl = async (report) => {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: (new URLSearchParams(adminLogin)).toString()
+      body: (new URLSearchParams(adminLogin)).toString(),
+      credentials: 'include'
     })
   }, config.adminLogin)
   await page.goto(report.url)

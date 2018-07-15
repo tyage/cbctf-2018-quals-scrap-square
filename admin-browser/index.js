@@ -25,17 +25,14 @@ const visitUrl = async (report) => {
     ]
   })
   const page = await browser.newPage()
-  await page.goto('http://localhost:3000')
+  await page.goto(config.serverUrl)
   await page.evaluate(async () => {
     await fetch('/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: (new URLSearchParams({
-        name: 'test',
-        password: 'test'
-      })).toString()
+      body: (new URLSearchParams(config.adminLogin)).toString()
     })
   })
   await page.goto(report.url)

@@ -178,6 +178,11 @@ app.post('/edit', (req, res) => {
 
 app.post('/report', (req, res) => {
   const doReport = () => {
+    if (!req.body.url.startsWith(config.serverUrl)) {
+      res.json({ success: false })
+      return
+    }
+
     db.run(
       'insert into reports (user_id, url, title, body) values (?, ?, ?, ?)',
       req.body.to, req.body.url, req.body.title, req.body.body,
@@ -202,7 +207,6 @@ app.post('/report', (req, res) => {
   }
 })
 app.get('/reports', (req, res) => {
-  // TODO: should verify report url
   db.serialize(() => {
     db.all(
       'select url, title, body from reports where user_id = ?',

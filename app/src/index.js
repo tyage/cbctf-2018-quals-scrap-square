@@ -71,6 +71,7 @@ app.post('/login', (req, res) => {
 })
 app.get('/register', (req, res) => res.render('register'))
 app.post('/register', (req, res) => {
+  // TODO: hash password
   const errors = []
   if (req.body.name.length > 80) {
     errors.push('Username should be less than 80')

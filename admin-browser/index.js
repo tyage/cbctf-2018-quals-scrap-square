@@ -26,15 +26,15 @@ const visitUrl = async (report) => {
   })
   const page = await browser.newPage()
   await page.goto(config.serverUrl)
-  await page.evaluate(async () => {
+  await page.evaluate(async (adminLogin) => {
     await fetch('/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: (new URLSearchParams(config.adminLogin)).toString()
+      body: (new URLSearchParams(adminLogin)).toString()
     })
-  })
+  }, config.adminLogin)
   await page.goto(report.url)
   await sleep(3000)
   console.log(`checking report ${report.id} is done`)

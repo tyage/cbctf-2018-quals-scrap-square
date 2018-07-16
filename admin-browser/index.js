@@ -53,16 +53,25 @@ const checkReport = async (report) => {
 }
 
 const checkAllReports = async () => {
-  db.serialize(() => {
-    db.all(
-      'select id, url, title, body from reports where user_id = ?',
-      adminId,
-      async (err, reports) => {
-        for (let report of reports) {
-          await checkReport(report)
+  return new Promise((resolve, reject) => {
+    db.serialize(() => {
+      db.all(
+        'select id, url, title, body from reports where user_id = ?',
+        adminId,
+        async (err, reports) => {
+          for (let report of reports) {
+            await checkReport(report)
+          }
+          resolve()
         }
-      }
-    )
+      )
+    })
   })
 }
-checkAllReports()
+
+(async () => {
+  while (true) {
+    await checkAllReports()
+    await sleep(3000)
+  }
+})()

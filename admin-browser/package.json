@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "pm2": "^3.0.0",
     "puppeteer": "^1.6.0",
     "sqlite3": "^4.0.1"
   },

@@ -3,7 +3,7 @@ import urllib.parse
 import secrets
 import re
 
-ENDPOINT = 'http://localhost:3000/'
+ENDPOINT = 'http://localhost:3000'
 
 class NoRedirectHandler(urllib.request.HTTPRedirectHandler):
     def http_error_302(self, req, fp, code, msg, headers):
@@ -29,14 +29,14 @@ def register(name, password):
         'name': name,
         'password': password
     }
-    return post('register', urllib.parse.urlencode(data))
+    return post('/register', urllib.parse.urlencode(data))
 
 def login(name, password):
     data = {
         'name': name,
         'password': password
     }
-    res = post('login', urllib.parse.urlencode(data))
+    res = post('/login', urllib.parse.urlencode(data))
     return res.headers['Set-Cookie']
 
 def register_and_login(name, password):
@@ -50,7 +50,7 @@ def create_scrap(session, title, body):
         'title': title,
         'body': body
     }
-    res = post('new', urllib.parse.urlencode(data), {
+    res = post('/new', urllib.parse.urlencode(data), {
         'Cookie': session
     })
     return res.headers['Location']
@@ -79,4 +79,4 @@ user3_body = user3_title
 user3_cookie = register_and_login(user3, user3)
 user3_scrap = create_scrap(user3_cookie, user3_title, user3_body)
 
-print('report {}'.format(user3_scrap))
+print('report {}{}#/../..'.format(ENDPOINT, user3_scrap))

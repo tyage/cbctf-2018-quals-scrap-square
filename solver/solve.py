@@ -60,7 +60,7 @@ user1_title = str(secrets.randbits(16)) + '.js'
 user1_body = '''
 import'/static/javascripts/load-scrap.js'
 import'/static/javascripts/report-scrap.js'
-import'/static/javascripts/watch-scrap-body-and-report-automatically-with-banword.js'
+import'/static/javascripts/periodically-watch-scrap-body-and-report-scrap-automatically-with-banword.js'
 '''
 user1_cookie = register_and_login(user1, user1)
 user1_scrap = create_scrap(user1_cookie, user1_title, user1_body)

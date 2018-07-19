@@ -3,8 +3,7 @@ extends layout.pug
 block content
   div.scrap-wrapper
     p!= `${user.name}'s scraps'`
-    h1.scrap-title!= title
-    nav
+    nav.scrap-header
       ul
         li
           a(href=`/static/raw/${user.id}/${title}`) Raw

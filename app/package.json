@@ -7,13 +7,14 @@
     "express": "^4.16.3",
     "express-recaptcha": "^4.0.2",
     "express-session": "^1.15.6",
+    "pm2": "^3.0.0",
     "pug": "^2.0.3",
     "sqlite3": "^4.0.0"
   },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./src/index.js"
+    "start": "pm2 start ./src/index.js"
   },
   "author": "",
   "license": "MIT"

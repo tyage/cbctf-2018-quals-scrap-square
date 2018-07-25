@@ -5,9 +5,16 @@ const bodyParser = require('body-parser')
 const sqlite3 = require('sqlite3')
 const fs = require('fs')
 const Recaptcha = require('express-recaptcha').Recaptcha;
+const crypto = require('crypto')
 const config = require('../../config.js')
 
 const recaptcha = new Recaptcha(config.recaptcha.siteKey, config.recaptcha.secretKey);
+
+const hashPassword = (password) => {
+  const hash = crypto.createHash('sha256')
+  hash.update(password)
+  return hash.digest('hex')
+}
 
 const db = new sqlite3.Database('scrap.db')
 db.serialize(() => {
@@ -61,7 +68,7 @@ app.post('/login', (req, res) => {
   db.serialize(() => {
     db.get(
       'select id, name from users where name = ? AND password = ?',
-      req.body.name, req.body.password,
+      req.body.name, hashPassword(req.body.password),
       (err, user) => {
         req.session.user = user
         res.redirect('/')
@@ -82,7 +89,7 @@ app.post('/register', (req, res) => {
 
   db.run(
     'insert into users (name, password) values (?, ?)',
-    req.body.name, req.body.password,
+    req.body.name, hashPassword(req.body.password),
     function (err, user) {
       if (err) {
         errors.push(err)

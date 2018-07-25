@@ -8,8 +8,6 @@ const Recaptcha = require('express-recaptcha').Recaptcha;
 const crypto = require('crypto')
 const config = require('../../config.js')
 
-const recaptcha = new Recaptcha(config.recaptcha.siteKey, config.recaptcha.secretKey);
-
 const hashPassword = (password) => {
   const hash = crypto.createHash('sha256')
   hash.update(password)
@@ -72,6 +70,8 @@ const isBodyValid = (body) => {
 }
 
 const startApp = async () => {
+  const recaptcha = new Recaptcha(config.recaptcha.siteKey, config.recaptcha.secretKey);
+
   const db = await sqlite.open('./scrap.db')
   initializeDB(db)
 

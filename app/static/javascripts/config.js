@@ -1,4 +1,4 @@
 window.admin = {
-  id: 1
+  id: 'admin'
 }
 window.banword = 'give me flag'

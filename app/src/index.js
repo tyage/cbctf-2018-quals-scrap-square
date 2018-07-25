@@ -21,7 +21,7 @@ db.serialize(() => {
   db.get('select count(*) from sqlite_master', (err, res) => {
     if (res['count(*)'] == 0) {
       db.run('create table users (id integer primary key, uid text, name text unique, password text)')
-      db.run('create table reports (id integer primary key, user_id integer, url text, title text, body text)')
+      db.run('create table reports (id integer primary key, uid string, url text, title text, body text)')
     }
   })
 })
@@ -136,7 +136,7 @@ app.use((req, res, next) => {
 })
 
 app.get('/', (req, res) => {
-  const scrapsDir = path.join(rawStaticDir, req.session.user.id.toString())
+  const scrapsDir = path.join(rawStaticDir, req.session.user.uid)
   fs.readdir(scrapsDir, (err, files) => {
     if (err) {
       files = []
@@ -186,9 +186,9 @@ app.post('/new', (req, res) => {
     return res.render('new', { errors })
   }
 
-  const filename = path.join(rawStaticDir, req.session.user.id.toString(), title)
+  const filename = path.join(rawStaticDir, req.session.user.uid, title)
   fs.writeFileSync(filename, body)
-  res.redirect(`/scraps/${req.session.user.id}/${title}`)
+  res.redirect(`/scraps/${req.session.user.uid}/${title}`)
 })
 app.post('/edit', (req, res) => {
   // check body
@@ -198,12 +198,12 @@ app.post('/edit', (req, res) => {
   const { errors: bodyErrors } = isBodyValid(body)
   const errors = [ ...titleErrors, ...bodyErrors ]
   if (errors.length > 0) {
-    return res.redirect(`/scraps/${req.session.user.id}/${title}`)
+    return res.redirect(`/scraps/${req.session.user.uid}/${title}`)
   }
 
-  const filename = path.join(rawStaticDir, req.session.user.id.toString(), title)
+  const filename = path.join(rawStaticDir, req.session.user.uid, title)
   fs.writeFileSync(filename, body)
-  res.redirect(`/scraps/${req.session.user.id}/${title}`)
+  res.redirect(`/scraps/${req.session.user.uid}/${title}`)
 })
 
 app.post('/report', (req, res) => {
@@ -214,7 +214,7 @@ app.post('/report', (req, res) => {
     }
 
     db.run(
-      'insert into reports (user_id, url, title, body) values (?, ?, ?, ?)',
+      'insert into reports (uid, url, title, body) values (?, ?, ?, ?)',
       req.body.to, req.body.url, req.body.title, req.body.body,
       function (err, user) {
         res.json({ success: true })
@@ -239,8 +239,8 @@ app.post('/report', (req, res) => {
 app.get('/reports', (req, res) => {
   db.serialize(() => {
     db.all(
-      'select url, title, body from reports where user_id = ?',
-      req.session.user.id,
+      'select url, title, body from reports where uid = ?',
+      req.session.user.uid,
       (err, reports) => {
         res.json({ reports })
       }
@@ -248,10 +248,10 @@ app.get('/reports', (req, res) => {
   })
 })
 
-app.get('/scraps/:user_id/:title', (req, res) => {
+app.get('/scraps/:uid/:title', (req, res) => {
   // admin and owner can view scrap
   db.serialize(() => {
-    db.get('select * from users where id = ?', req.params.user_id, (err, user) => {
+    db.get('select * from users where uid = ?', req.params.uid, (err, user) => {
       res.render('scrap', {
         user,
         title: req.params.title,

@@ -22,6 +22,10 @@ db.serialize(() => {
     if (res['count(*)'] == 0) {
       db.run('create table users (id integer primary key, uid text, name text unique, password text)')
       db.run('create table reports (id integer primary key, uid string, url text, title text, body text)')
+      db.run(
+        'insert into users (uid, name, password) values (?, ?, ?)',
+        'admin', config.adminLogin.name, config.adminLogin.password
+      )
     }
   })
 })
@@ -223,7 +227,7 @@ app.post('/report', (req, res) => {
   }
 
   // only admin can bypass recaptcha
-  if (req.session.user.id === 1) {
+  if (req.session.user.uid === 'admin') {
     doReport()
   } else {
     // check captcha

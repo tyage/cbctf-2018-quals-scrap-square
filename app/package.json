@@ -9,7 +9,7 @@
     "express-session": "^1.15.6",
     "pm2": "^3.0.0",
     "pug": "^2.0.3",
-    "sqlite3": "^4.0.0"
+    "sqlite": "^2.9.2"
   },
   "devDependencies": {},
   "scripts": {

@@ -169,7 +169,7 @@ const isTitleValid = (title) => {
 }
 const isBodyValid = (body) => {
   const errors = []
-  if (/[^0-9a-zA-Z '.\n\r/\-]/.test(body)) {
+  if (/[^0-9a-zA-Z '.\n\r/-]/.test(body)) {
     errors.push('You cannot use unsafe character')
   }
   return {

@@ -20,11 +20,33 @@ const db = new sqlite3.Database('scrap.db')
 db.serialize(() => {
   db.get('select count(*) from sqlite_master', (err, res) => {
     if (res['count(*)'] == 0) {
-      db.run('create table users (id integer primary key, name text unique, password text)')
+      db.run('create table users (id integer primary key, uid text, name text unique, password text)')
       db.run('create table reports (id integer primary key, user_id integer, url text, title text, body text)')
     }
   })
 })
+
+const generateUid = async () => {
+  const isUidUnique = (uid) => {
+    return new Promise((resolve, reject) => {
+      db.serialize(() => {
+        db.get('select * from users where uid = ?', uid, (err, user) => {
+          resolve(user === undefined)
+        })
+      })
+    })
+  }
+
+  let newUid
+  while (true) {
+    newUid = Math.random().toString(36).substring(2, 10)
+    const isUnique = await isUidUnique(newUid)
+    if (isUnique) {
+      break
+    }
+  }
+  return newUid
+}
 
 const app = express()
 
@@ -77,7 +99,7 @@ app.post('/login', (req, res) => {
   })
 })
 app.get('/register', (req, res) => res.render('register'))
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
   // TODO: hash password
   const errors = []
   if (req.body.name.length > 80) {
@@ -87,9 +109,10 @@ app.post('/register', (req, res) => {
     return res.render('register', { errors })
   }
 
+  const uid = await generateUid()
   db.run(
-    'insert into users (name, password) values (?, ?)',
-    req.body.name, hashPassword(req.body.password),
+    'insert into users (uid, name, password) values (?, ?, ?)',
+    uid, req.body.name, hashPassword(req.body.password),
     function (err, user) {
       if (err) {
         errors.push(err)

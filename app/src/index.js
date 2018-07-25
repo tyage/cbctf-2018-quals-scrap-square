@@ -20,7 +20,7 @@ const db = new sqlite3.Database('scrap.db')
 db.serialize(() => {
   db.get('select count(*) from sqlite_master', (err, res) => {
     if (res['count(*)'] == 0) {
-      db.run('create table users (id integer primary key, uid text, name text unique, password text)')
+      db.run('create table users (id integer primary key, uid text unique, name text unique, password text)')
       db.run('create table reports (id integer primary key, uid string, url text, title text, body text)')
       db.run(
         'insert into users (uid, name, password) values (?, ?, ?)',

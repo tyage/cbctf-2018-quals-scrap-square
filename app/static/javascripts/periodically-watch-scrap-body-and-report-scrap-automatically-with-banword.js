@@ -1,4 +1,4 @@
-let timer = setInterval(() => {
+const timer = setInterval(() => {
   if ($('.scrap-body').length === 0) {
     return;
   }

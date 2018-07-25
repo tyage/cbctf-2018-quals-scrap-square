@@ -3,7 +3,7 @@ const puppeteer = require('puppeteer')
 const sqlite3 = require('sqlite3')
 const config = require('../config.js')
 
-const adminId = 1
+const adminUid = 'admin'
 const db = new sqlite3.Database('../app/scrap.db')
 
 const sleep = (millsec) => new Promise((resolve, reject) => {
@@ -56,8 +56,8 @@ const checkAllReports = async () => {
   return new Promise((resolve, reject) => {
     db.serialize(() => {
       db.all(
-        'select id, url, title, body from reports where user_id = ?',
-        adminId,
+        'select id, url, title, body from reports where uid = ?',
+        adminUid,
         async (err, reports) => {
           for (let report of reports) {
             await checkReport(report)

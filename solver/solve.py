@@ -65,7 +65,7 @@ import'/static/javascripts/periodically-watch-scrap-body-and-report-scrap-automa
 user1_cookie = register_and_login(user1, user1)
 user1_scrap = create_scrap(user1_cookie, user1_title, user1_body)
 user1_scrap_static = re.sub('/scraps', '/static/raw', user1_scrap)
-user1_id = re.search('/scraps\/(\d+)/', user1_scrap).group(1)
+user1_id = re.search('/scraps\/(\w+)/', user1_scrap).group(1)
 
 user2 = '<script type=module src={}></script><!--'.format(user1_scrap_static)
 # crossorigin is needed when the server hash basic auth

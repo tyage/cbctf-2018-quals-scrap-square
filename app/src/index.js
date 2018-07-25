@@ -24,7 +24,7 @@ const initializeDB = async (db) => {
   await db.run('create table reports (id integer primary key, uid string, url text, title text, body text)')
   await db.run(
     'insert into users (uid, name, password) values (?, ?, ?)',
-    'admin', config.adminLogin.name, config.adminLogin.password
+    'admin', config.adminLogin.name, hashPassword(config.adminLogin.password)
   )
 }
 

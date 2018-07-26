@@ -1,6 +1,6 @@
 version: "2"
 services:
-  node:
+  app:
     image: "node:10"
     user: "node"
     working_dir: /home/node/app
@@ -11,4 +11,13 @@ services:
       - ./config.js:/home/node/config.js
     ports:
       - "127.0.0.1:3000:3000"
+    command: "npm start"
+  admin:
+    build: "./admin-browser"
+    user: "node"
+    working_dir: /home/node/app/admin-browser
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./:/home/node/app
     command: "npm start"

@@ -11,7 +11,7 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "pm2 start ./index.js"
+    "start": "npm install && pm2 start --no-daemon ./index.js"
   },
   "author": "",
   "license": "MIT"

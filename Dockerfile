@@ -38,3 +38,11 @@ RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
 USER pptruser
 
 ENTRYPOINT ["dumb-init", "--"]
+
+COPY --chown=pptruser:pptruser ./ /app
+WORKDIR /app
+
+RUN cd /app/app && npm install
+RUN cd /app/admin-browser && npm install
+
+CMD ["sh", "run.sh"]

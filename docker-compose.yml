@@ -14,10 +14,10 @@ services:
     command: "npm start"
   admin:
     build: "./admin-browser"
-    user: "node"
-    working_dir: /home/node/app/admin-browser
+    user: "pptruser"
+    working_dir: /home/pptruser/app/admin-browser
     environment:
       - NODE_ENV=production
     volumes:
-      - ./:/home/node/app
+      - ./:/home/pptruser/app
     command: "npm start"

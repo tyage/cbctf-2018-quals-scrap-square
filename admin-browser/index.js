@@ -1,10 +1,9 @@
 const { spawn } = require('child_process')
 const puppeteer = require('puppeteer')
-const sqlite3 = require('sqlite3')
+const sqlite = require('sqlite')
 const config = require('../config.js')
 
 const adminUid = 'admin'
-const db = new sqlite3.Database('../app/scrap.db')
 
 const sleep = (millsec) => new Promise((resolve, reject) => {
   setTimeout(() => {
@@ -42,36 +41,26 @@ const visitUrl = async (report) => {
   await browser.close()
 }
 
-const checkReport = async (report) => {
-  return new Promise((resolve, reject) => {
-    // delete report when check started
-    db.run('delete from reports where id = ?', report.id, async () => {
-      await visitUrl(report)
-      resolve()
-    })
-  })
+const checkReport = async (db, report) => {
+  // delete report when check started
+  await db.run('delete from reports where id = ?', report.id)
+  await visitUrl(report)
 }
 
-const checkAllReports = async () => {
-  return new Promise((resolve, reject) => {
-    db.serialize(() => {
-      db.all(
-        'select id, url, title, body from reports where uid = ?',
-        adminUid,
-        async (err, reports) => {
-          for (let report of reports) {
-            await checkReport(report)
-          }
-          resolve()
-        }
-      )
-    })
-  })
+const checkAllReports = async (db) => {
+  const reports = await db.all(
+    'select id, url, title, body from reports where uid = ?',
+    adminUid
+  )
+  for (let report of reports) {
+    await checkReport(db, report)
+  }
 }
 
 (async () => {
+  const db = await sqlite.open('../app/scrap.db')
   while (true) {
-    await checkAllReports()
+    await checkAllReports(db)
     await sleep(3000)
   }
 })()

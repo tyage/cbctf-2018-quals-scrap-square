@@ -1,7 +1,7 @@
 .git
 .dockerignore
 node_modules
-app/static/raw
+app/static/raw/*
 app/scrap.db
 Dockerfile
 solver

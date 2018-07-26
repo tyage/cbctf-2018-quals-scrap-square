@@ -16,10 +16,6 @@ RUN apt-get update && apt-get install -y wget --no-install-recommends \
     && apt-get purge --auto-remove -y curl \
     && rm -rf /src/*.deb
 
-# It's a good idea to use dumb-init to help prevent zombie chrome processes.
-ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 /usr/local/bin/dumb-init
-RUN chmod +x /usr/local/bin/dumb-init
-
 # Uncomment to skip the chromium download when installing puppeteer. If you do,
 # you'll need to launch puppeteer with:
 #     browser.launch({executablePath: 'google-chrome-unstable'})
@@ -37,12 +33,22 @@ RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
 # Run everything after as non-privileged user.
 USER pptruser
 
-ENTRYPOINT ["dumb-init", "--"]
-
 COPY --chown=pptruser:pptruser ./ /app
-WORKDIR /app
 
 RUN cd /app/app && npm install
 RUN cd /app/admin-browser && npm install
+
+COPY ./flag /app/app/static/raw/admin/de456f9f-dfed-4692-9094-ca27adbc0c70
+
+# MOVE this command to last because it is not cached
+# It's a good idea to use dumb-init to help prevent zombie chrome processes.
+USER root
+ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.2.0_amd64 /usr/local/bin/dumb-init
+RUN chmod +x /usr/local/bin/dumb-init
+
+ENTRYPOINT ["dumb-init", "--"]
+
+USER pptruser
+WORKDIR /app
 
 CMD ["sh", "run.sh"]

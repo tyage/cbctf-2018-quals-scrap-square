@@ -38,6 +38,7 @@ COPY --chown=pptruser:pptruser ./ /app
 RUN cd /app/app && npm install
 RUN cd /app/admin-browser && npm install
 
+# TODO: change flag file position
 COPY ./flag /app/app/static/raw/admin/de456f9f-dfed-4692-9094-ca27adbc0c70
 
 # MOVE this command to last because it is not cached

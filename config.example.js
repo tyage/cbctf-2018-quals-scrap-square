@@ -1,14 +1,14 @@
 module.exports = {
-  serverUrl: 'http://localhost:3000/',
+  serverUrl: process.env.SERVER_URL,
   adminLogin: {
-    name: 'test',
-    password: 'test'
+    name: 'admin',
+    password: 'aZ9RJTbA9Dw0BS7u'
   },
   recaptcha: {
     siteKey: '',
     secretKey: ''
   },
   express: {
-    secret: ''
+    secret: 'aZ9RJTbA9Dw0BS7u'
   }
 }

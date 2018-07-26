@@ -125,8 +125,8 @@ const startApp = async () => {
   app.get('/register', (req, res) => res.render('register'))
   app.post('/register', async (req, res) => {
     const errors = []
-    if (req.body.name.length > 80) {
-      errors.push('Username should be less than 80')
+    if (req.body.name.length > 256) {
+      errors.push('Username should be less than 256')
     }
     if (errors.length > 0) {
       return res.render('register', { errors })

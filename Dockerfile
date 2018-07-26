@@ -39,7 +39,7 @@ RUN cd /app/app && npm install
 RUN cd /app/admin-browser && npm install
 
 # TODO: change flag file position
-COPY ./flag /app/app/static/raw/admin/de456f9f-dfed-4692-9094-ca27adbc0c70
+COPY ./flag /app/app/static/raw/admin/91510540-f090-4399-bad5-351e719686b5
 
 # MOVE this command to last because it is not cached
 # It's a good idea to use dumb-init to help prevent zombie chrome processes.

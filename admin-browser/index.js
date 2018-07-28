@@ -63,7 +63,7 @@ const checkAllReports = async (db) => {
 
   for (let reports of reportsQueue) {
     const checkReports = reports.map(r => checkReport(db, r))
-    await Promise.all(checkReports)
+    await Promise.all(checkReports).catch(e => console.log(e))
   }
 }
 

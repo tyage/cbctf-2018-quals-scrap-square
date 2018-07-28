@@ -2,6 +2,7 @@ import urllib.request
 import urllib.parse
 import secrets
 import re
+import os
 
 ENDPOINT = os.environ["TARGET_URL"]
 

@@ -4,6 +4,7 @@ const sqlite = require('sqlite')
 const config = require('../config.js')
 
 const adminUid = 'admin'
+const browserPool = 3
 
 const sleep = (millsec) => new Promise((resolve, reject) => {
   setTimeout(() => {
@@ -12,8 +13,8 @@ const sleep = (millsec) => new Promise((resolve, reject) => {
 })
 
 const visitUrl = async (report) => {
-  console.log(`checking report ${report.id}`)
-  console.log(report)
+  console.log(report.id, 'start checking')
+  console.log(report.id, report)
   const browser = await puppeteer.launch({
     args: [
       '--media-cache-size=1',
@@ -37,7 +38,7 @@ const visitUrl = async (report) => {
   }, config.adminLogin)
   await page.goto(report.url)
   await sleep(3000)
-  console.log(`checking report ${report.id} is done`)
+  console.log(report.id, `checking report is done`)
   await browser.close()
 }
 
@@ -52,8 +53,17 @@ const checkAllReports = async (db) => {
     'select id, url, title, body from reports where uid = ?',
     adminUid
   )
-  for (let report of reports) {
-    await checkReport(db, report)
+
+  let i = 0
+  const reportsQueue = []
+  while (i < reports.length) {
+    reportsQueue.push(reports.slice(i, i + browserPool))
+    i += browserPool
+  }
+
+  for (let reports of reportsQueue) {
+    const checkReports = reports.map(r => checkReport(db, r))
+    await Promise.all(checkReports)
   }
 }
 

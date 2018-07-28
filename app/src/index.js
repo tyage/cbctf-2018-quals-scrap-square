@@ -212,6 +212,12 @@ const startApp = async () => {
         return
       }
 
+      // you don't need to report to yourself
+      if (req.body.to === req.session.user.uid) {
+        res.json({ success: false })
+        return
+      }
+
       try {
         await db.run(
           'insert into reports (uid, url, title, body) values (?, ?, ?, ?)',

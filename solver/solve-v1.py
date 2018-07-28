@@ -3,7 +3,7 @@ import urllib.parse
 import secrets
 import re
 
-ENDPOINT = 'http://localhost:3000'
+ENDPOINT = os.environ["TARGET_URL"]
 
 class NoRedirectHandler(urllib.request.HTTPRedirectHandler):
     def http_error_302(self, req, fp, code, msg, headers):

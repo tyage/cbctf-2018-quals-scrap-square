@@ -1,7 +1,9 @@
 .git
 .dockerignore
-node_modules
-app/static/raw/*
-app/scrap.db
+/admin-browser/node_modules
+/app/node_modules
+/app/static/raw/*
+/app/scrap.db
 Dockerfile
-solver
+/solver
+/tmp
